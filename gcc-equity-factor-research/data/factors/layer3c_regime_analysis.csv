@@ -1,4 +1,0 @@
-Regime,Months,Avg IV (%),Avg RV (%),Avg VRP gap (pp),Avg CC yield (%/mo),Avg exec_rate,Avg vrp_pct
-calm,50,21.259,13.735,7.523,0.556,0.422,0.256
-normal,49,28.66,19.923,8.736,1.536,0.51,0.495
-stressed,51,37.051,27.8,9.252,2.593,0.635,0.725

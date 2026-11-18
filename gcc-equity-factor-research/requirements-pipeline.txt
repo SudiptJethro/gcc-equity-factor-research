@@ -1,6 +1,0 @@
-# Extra packages for re-downloading data and rebuilding every layer
--r requirements.txt
-yfinance>=0.2.40
-requests>=2.31
-# TradingView fallback for ADX / DFM gaps (unofficial client):
-# pip install git+https://github.com/rongardF/tvdatafeed.git

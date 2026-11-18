@@ -1,5 +1,0 @@
-ticker,name,price_sar,hv_ann_pct,iv_est_pct,vrp_gap_pp,atm_prem_sar,otm_prem_sar,net_prem_sar,monthly_yield,annual_yield,note
-2222.SR,Saudi Aramco,28.5,20.0,26.5,6.5,0.87,0.52,0.39,1.38,16.52,"5% OTM call, 1M maturity, American-style physical settlement. Sell only when position is in long book. Roll monthly."
-1120.SR,Al Rajhi Bank,96.0,25.0,31.5,6.5,3.49,2.1,1.57,1.64,19.64,"5% OTM call, 1M maturity, American-style physical settlement. Sell only when position is in long book. Roll monthly."
-7010.SR,STC,45.0,20.0,26.5,6.5,1.38,0.83,0.62,1.38,16.52,"5% OTM call, 1M maturity, American-style physical settlement. Sell only when position is in long book. Roll monthly."
-2010.SR,SABIC,78.0,28.0,34.5,6.5,3.11,1.86,1.4,1.79,21.51,"5% OTM call, 1M maturity, American-style physical settlement. Sell only when position is in long book. Roll monthly."
