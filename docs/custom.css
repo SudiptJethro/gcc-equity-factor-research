@@ -1,0 +1,150 @@
+/* GCC Equity Factor Research - Dashboard Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --navy:   #0D1B2A;
+  --gold:   #C9A84C;
+  --slate:  #7A8BA0;
+  --teal:   #4ECCA3;
+  --card:   #1C2840;
+  --border: rgba(255, 255, 255, 0.07);
+  --text:   #E8EAF0;
+  --sub:    #A0AEC0;
+}
+
+/* Base */
+body, html {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  background-color: #111927 !important;
+  color: var(--text) !important;
+  overflow-x: hidden;
+}
+
+/* Sidebar */
+.sidebar-wrapper {
+  background: #0F1F33;
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 168, 76, 0.3) transparent;
+}
+
+.sidebar-wrapper::-webkit-scrollbar { width: 4px; }
+.sidebar-wrapper::-webkit-scrollbar-thumb { background: rgba(201, 168, 76, 0.3); border-radius: 2px; }
+
+/* Nav links */
+.nav-link-sidebar {
+  color: var(--sub) !important;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+}
+
+.nav-link-sidebar:hover {
+  background: rgba(201, 168, 76, 0.08) !important;
+  color: var(--text) !important;
+}
+
+.nav-link-sidebar.active {
+  background: rgba(201, 168, 76, 0.15) !important;
+  color: var(--gold) !important;
+  font-weight: 600;
+}
+
+/* Content area */
+.content-area {
+  min-height: 100vh;
+  background: #111927;
+  padding: 0;
+}
+
+/* Cards */
+.card {
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.card-header {
+  border-bottom: 1px solid var(--border) !important;
+  padding: 10px 14px !important;
+}
+
+/* Tables */
+.table-dark {
+  background: transparent !important;
+  --bs-table-bg: transparent;
+  --bs-table-hover-bg: rgba(201, 168, 76, 0.06);
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.02);
+  font-size: 0.82rem;
+}
+
+.table-dark thead th {
+  color: var(--sub) !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  padding: 8px 10px !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.table-dark td {
+  padding: 7px 10px !important;
+  border-color: var(--border) !important;
+  vertical-align: middle;
+}
+
+.table-dark tbody tr:hover {
+  background: rgba(201, 168, 76, 0.05) !important;
+}
+
+/* Plotly graphs */
+.js-plotly-plot .plotly {
+  border-radius: 0 !important;
+}
+
+/* Buttons */
+.btn-warning {
+  background: var(--gold) !important;
+  border-color: var(--gold) !important;
+  color: #0D1B2A !important;
+  font-weight: 700;
+}
+
+.btn-warning:hover {
+  background: #b8943d !important;
+  border-color: #b8943d !important;
+}
+
+/* Radio items */
+.form-check-input:checked {
+  background-color: var(--gold) !important;
+  border-color: var(--gold) !important;
+}
+
+/* Scrollbar for tables */
+div[style*="overflow"] {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+/* Badge overrides */
+.badge.bg-warning {
+  background-color: var(--gold) !important;
+  color: #0D1B2A !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar-wrapper {
+    position: relative;
+    height: auto;
+  }
+}

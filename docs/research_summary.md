@@ -1,10 +1,10 @@
 > This is the research write-up as of May 2026. The figures match the output files in `data/factors/`. The universe counts and filter thresholds were corrected to match the code when the repository was published.
 
-# GCC Equity Factor Research — Project Summary
+# GCC Equity Factor Research: Project Summary
 
 **Research Question:** Do classic equity factor premia (value, momentum, quality, low volatility) generate statistically significant alpha in GCC equity markets, and do they behave differently across ADX, DFM, Tadawul, QSE, and Boursa Kuwait?
 
-**Universe:** 167 stocks — ADX, DFM, Tadawul, QSE, Boursa Kuwait  
+**Universe:** 167 stocks across ADX, DFM, Tadawul, QSE and Boursa Kuwait  
 **Period:** March 2015 → May 2026 (~135 months, 124 joint-regression months)  
 **Method:** Equal-weighted long-short quintile portfolios + Fama-MacBeth cross-sectional regressions (Newey-West 4-lag) + Backtest attribution + VRP overlay
 
@@ -28,7 +28,7 @@
 - **167 stocks** across 5 exchanges after applying a minimum median price (0.10), a minimum average daily volume (5,000 shares) and at least 24 months of history (filters in `Layer_1/config.py`).
 - **Exchange breakdown:** Tadawul 81 (Saudi Arabia), ADX 48 (UAE Abu Dhabi), DFM 16 (UAE Dubai), QSE 15 (Qatar), Boursa Kuwait 7.
 - **Data source:** Yahoo Finance via yfinance, with TradingView filling gaps for ADX and DFM names. Monthly prices for returns and momentum; daily prices for low-vol (252 trading days); a single fundamentals snapshot (December 2025) for value and quality.
-- **Critical caveat:** Fundamental data (P/B, EV/EBITDA, ROE) is not historical point-in-time. Value and quality results are upper-bound estimates. Momentum and low-vol are unaffected — price-based only.
+- **Critical caveat:** Fundamental data (P/B, EV/EBITDA, ROE) is not historical point-in-time. Value and quality results are upper-bound estimates. Momentum and low-vol are unaffected because they are built from prices only.
 
 ### Fundamental data coverage
 
@@ -43,7 +43,7 @@ Coverage gaps are concentrated in smaller Kuwaiti and Qatari names. Documented a
 
 ---
 
-## 3. Layer 2 — Factor Construction Results
+## 3. Layer 2: Factor Construction Results
 
 ### Full GCC Universe (167 stocks, T=124–135 months)
 
@@ -63,20 +63,20 @@ Coverage gaps are concentrated in smaller Kuwaiti and Qatari names. Documented a
 | MOMENTUM | +11.91% | +0.422 | 2/4 |
 | LOW-VOL | −2.12% | −0.072 | 3/4 |
 
-Value and Quality are N/A for ADX in isolation — fewer than 15 stocks pass the fundamental coverage threshold for quintile assignment.
+Value and Quality are N/A for ADX in isolation, because fewer than 15 stocks pass the fundamental coverage threshold for quintile assignment.
 
 ---
 
-## 4. Layer 3a — Fama-MacBeth Statistical Significance
+## 4. Layer 3a: Fama-MacBeth Statistical Significance
 
 ### Joint Regression (all 4 factors, T=124, avg N=102, avg R²=11.2%)
 
 | Factor | λ (bps/mo) | t-stat (NW-4) | Significance |
 |---|---|---|---|
-| VALUE | −6.18 | −0.40 | — |
-| MOMENTUM | +13.56 | +0.62 | — |
-| QUALITY | +20.88 | +1.48 | — |
-| LOW-VOL | −71.94 | −0.63 | — |
+| VALUE | −6.18 | −0.40 | |
+| MOMENTUM | +13.56 | +0.62 | |
+| QUALITY | +20.88 | +1.48 | |
+| LOW-VOL | −71.94 | −0.63 | |
 
 ### Univariate FM (each factor standalone)
 
@@ -85,7 +85,7 @@ Value and Quality are N/A for ADX in isolation — fewer than 15 stocks pass the
 | VALUE | −28.77 | −2.16 | ** (5%, sign inverted) |
 | MOMENTUM | +23.87 | +1.81 | * (10%) |
 | QUALITY | +41.08 | +2.98 | *** (1%) |
-| LOW-VOL | −67.81 | −0.67 | — |
+| LOW-VOL | −67.81 | −0.67 | |
 
 ### Information Coefficient (Spearman rank-IC, monthly)
 
@@ -111,17 +111,17 @@ Value and Quality are N/A for ADX in isolation — fewer than 15 stocks pass the
 
 ## 5. Factor Deep Dive
 
-### 5.1 Value — Statistically Significant Inversion
+### 5.1 Value: Statistically Significant Inversion
 
-The value premium does not exist in GCC — it is **inverted and statistically significant**. Cheap stocks underperform expensive ones by 8.39% per year. Univariate t-stat of −2.16** clears the 5% threshold, making this the most robustly significant factor in the analysis — but in the wrong direction.
+The value premium does not exist in GCC. It is **inverted and statistically significant**. Cheap stocks underperform expensive ones by 8.39% per year. Univariate t-stat of −2.16** clears the 5% threshold, making it a robust result, but in the wrong direction.
 
-Hit rate of 47.4% means the factor was wrong more months than right. Quintile monotonicity 1/4 — completely broken.
+Hit rate of 47.4% means the factor was wrong more months than right. Quintile monotonicity is 1/4, so the ordering is completely broken.
 
 **Why value fails structurally in GCC:**
 1. State-linked mega-caps (Aramco, QNB, FAB, Al Rajhi) trade at premium valuations but consistently deliver premium returns. "Expensive" is structural, not temporary.
 2. "Cheap" in GCC means genuinely distressed small-caps or family conglomerates with opaque governance, not temporarily mispriced quality businesses. Mean-reversion does not operate.
 3. Low foreign institutional participation means mispricings persist. Cheap stocks stay cheap or get cheaper.
-4. Look-ahead bias typically inflates value returns — the fact that value is still significantly negative under look-ahead bias strengthens the finding.
+4. Look-ahead bias typically inflates value returns, so the fact that value is still significantly negative under look-ahead bias strengthens the finding.
 
 Sub-period worst: Post-COVID 2021–23 (λ = −34.8 bps, t = −1.88, Sharpe = −0.909) as oil-linked cheap stocks failed to recover alongside the earnings boom.
 
@@ -129,9 +129,9 @@ Sub-period worst: Post-COVID 2021–23 (λ = −34.8 bps, t = −1.88, Sharpe = 
 
 ---
 
-### 5.2 Momentum — Works, Marginal Significance
+### 5.2 Momentum: Works, Marginal Significance
 
-Momentum produces a real, implementable signal in GCC — but with weaker statistical significance than previously estimated.
+Momentum produces a real, implementable signal in GCC, but with weaker statistical significance than previously estimated.
 
 - Ann. L/S spread: **+9.29%**
 - FM t-stat (univariate): **+1.81 ***  (10% level only)
@@ -139,7 +139,7 @@ Momentum produces a real, implementable signal in GCC — but with weaker statis
 - Quintile monotonicity: **4/4 perfect**
 - Hit rate: **56.5%**
 
-The joint regression t-stat of +0.62 reflects collinearity with quality — many GCC quality names are also momentum names.
+The joint regression t-stat of +0.62 reflects collinearity with quality: many GCC quality names are also momentum names.
 
 **Why momentum works in GCC:**
 1. Oil price cycles create sustained multi-month trends. Energy and petrochemical stocks trend upward for multiple months as earnings expectations are revised sequentially.
@@ -155,13 +155,13 @@ The joint regression t-stat of +0.62 reflects collinearity with quality — many
 | Post-COVID 21–23 | +0.461 | +39.9 | +0.86 |
 | Recent 24–26 | **+0.903** | +50.9 | +1.89 * |
 
-Momentum is strengthening in the most recent sub-period (2024–2026) — consistent with Tadawul re-rating and sustained oil-driven earnings momentum.
+Momentum is strengthening in the most recent sub-period (2024–2026), consistent with Tadawul re-rating and sustained oil-driven earnings momentum.
 
 **No look-ahead bias. Sharpe +0.561 is a clean estimate.**
 
 ---
 
-### 5.3 Quality — Strongest Signal, Look-Ahead Inflated
+### 5.3 Quality: Strongest Signal, Look-Ahead Inflated
 
 Quality has the strongest statistical case but numbers are an upper bound. Quintile monotonicity is 3/4 (Q3–Q4 break) not perfect.
 
@@ -169,7 +169,7 @@ Quality has the strongest statistical case but numbers are an upper bound. Quint
 - FM t-stat (univariate): **+2.98 ***
 - FM t-stat (joint): **+1.48** (only factor with positive joint coefficient)
 - ICIR: **+1.453**
-- Quintile monotonicity: **3/4** (Q3 = +0.04%, Q4 = +0.35% — minor break)
+- Quintile monotonicity: **3/4** (Q3 = +0.04%, Q4 = +0.35%, a minor break)
 - Hit rate: **65.9%**
 
 **Look-ahead adjustment:** ROE, operating margins, and earnings stability sourced from yfinance as of December 2025. Academic literature suggests look-ahead bias inflates quality Sharpe by 0.3–0.5. Realistic out-of-sample estimate: **Sharpe 0.4–0.6**.
@@ -183,11 +183,11 @@ Quality has the strongest statistical case but numbers are an upper bound. Quint
 | Post-COVID 21–23 | **+2.165** | +16.0 | +0.67 |
 | Recent 24–26 | +1.557 | +31.8 | +1.74 * |
 
-Pre-COVID quality dominated (Sharpe +1.235). COVID reversed it sharply (Sharpe −1.091) — profitability offered no protection in a liquidity panic. Post-COVID recovery was the strongest of all periods (Sharpe +2.165). Recent period remains strong (Sharpe +1.557).
+Pre-COVID quality dominated (Sharpe +1.235). COVID reversed it sharply (Sharpe −1.091), as profitability offered no protection in a liquidity panic. Post-COVID recovery was the strongest of all periods (Sharpe +2.165). Recent period remains strong (Sharpe +1.557).
 
 ---
 
-### 5.4 Low Volatility — IC/FM Divergence Persists After Fix
+### 5.4 Low Volatility: IC/FM Divergence Persists After Fix
 
 The low-vol signal is the strongest of all four factors by IC; the L/S portfolio remains negative even after the short-book filter was applied.
 
@@ -212,11 +212,11 @@ The low-vol signal is the strongest of all four factors by IC; the L/S portfolio
 | Post-COVID 21–23 | +83.2 | +1.59 | +0.695 |
 | Recent 24–26 | +64.6 | +1.71 * | +0.586 |
 
-Low-vol is improving over time. Post-COVID and recent periods show positive lambda — consistent with the post-MSCI-upgrade environment (Kuwait joined MSCI EM June 2020) where institutional capital reduced micro-cap blowup frequency. The signal is maturing but has not yet produced a positive full-sample L/S portfolio return.
+Low-vol is improving over time. Post-COVID and recent periods show positive lambda, consistent with the post-MSCI-upgrade environment (Kuwait joined MSCI EM June 2020) where institutional capital reduced micro-cap blowup frequency. The signal is maturing but has not yet produced a positive full-sample L/S portfolio return.
 
 ---
 
-## 6. Layer 3b — Base Portfolio Construction
+## 6. Layer 3b: Base Portfolio Construction
 
 ### Individual Factor Portfolios
 
@@ -238,12 +238,12 @@ Transaction costs: 50bps round-trip
 | Sleeve A (vol-scaled) | +8.30% | 14.82% | 0.56 | −34.0% | 56.8% |
 | Sleeve B low-vol (gross) | +8.54% | 47.51% | 0.18 | −62.6% | 44.8% |
 | Sleeve B (vol-scaled) | +0.69% | 21.21% | 0.03 | −45.0% | 44.8% |
-| Combined (A + B) | +5.79% | — | 0.49 | −24.5% | 58.8% |
+| Combined (A + B) | +5.79% | 11.76% | 0.49 | −24.5% | 58.8% |
 | Combined + circuit breaker | +5.35% | 10.84% | 0.49 | −22.9% | 58.8% |
 
 ---
 
-## 7. Layer 3c — VRP Overlay & Volatility Surface
+## 7. Layer 3c: VRP Overlay & Volatility Surface
 
 A volatility risk premium (VRP) overlay was constructed using implied vs. realised volatility as a signal for covered call writing on the equity factor portfolio. VRP is the systematic premium sellers of options collect because implied vol exceeds realised vol on average.
 
@@ -255,7 +255,7 @@ A volatility risk premium (VRP) overlay was constructed using implied vs. realis
 | Normal | 49 | 28.7% | 19.9% | 8.7pp | 1.54% |
 | Stressed | 51 | 37.1% | 27.8% | 9.3pp | 2.59% |
 
-VRP gap is persistent across all regimes — even in stressed environments implied vol exceeds realised vol by 9+ percentage points.
+VRP gap is persistent across all regimes. Even in stressed environments implied vol exceeds realised vol by 9+ percentage points.
 
 ### VRP Overlay Results
 
@@ -266,7 +266,7 @@ VRP gap is persistent across all regimes — even in stressed environments impli
 | Layer 3c: dynamic VRP overlay | **+18.13%** | 12.17% | **1.49** | −15.8% | **1.15** |
 | **FINAL (CB + VRP + hedge)** | **+20.11%** | 11.23% | **1.79** | **−15.9%** | **1.26** |
 
-**The VRP overlay is the most impactful structural enhancement** — it takes the base multi-factor portfolio from Sharpe 0.49 to 1.79. Hit rate improves from 58.8% to **77.1%**.
+**The VRP overlay is the most impactful structural enhancement.** It takes the base multi-factor portfolio from Sharpe 0.49 to 1.79. Hit rate improves from 58.8% to **77.1%**.
 
 > **Caveat:** The theoretical ceiling (Sharpe 2.20) assumes fixed-notional sizing and is not directly tradeable. The dynamic implementation (Sharpe 1.49) represents realistic sizing constraints. The gap (−5.72% ann.) represents execution friction and sizing conservatism.
 
@@ -284,7 +284,7 @@ VRP gap is persistent across all regimes — even in stressed environments impli
 | Tadawul | +7.13% | 0.400 | +1.91 * | 2/4 |
 | QSE | +11.72% | 0.576 | +2.44 ** | 3/4 |
 
-DFM (Dubai) shows the strongest and cleanest momentum — perfect quintile monotonicity. QSE has the best momentum Sharpe at exchange level.
+DFM (Dubai) shows the strongest and cleanest momentum, with perfect quintile monotonicity. QSE has the best momentum Sharpe at exchange level.
 
 ### Quality by Exchange
 
@@ -331,8 +331,8 @@ Sub-period table shows FM lambda (bps/month) from joint regression and portfolio
 | LOW-VOL | Sharpe −0.432 (λ=−292, t=−1.04) | Sharpe +0.075 (λ=−3.4, t=−0.03) | Sharpe +0.695 (λ=+83.2, t=+1.59) | Sharpe +0.586 (λ=+64.6, t=+1.71 *) |
 
 **Narrative:**
-- **Pre-COVID 2015–2019:** Quality dominated the stable oil-revenue era (Sharpe +1.235, t=+1.74*). Momentum was flat despite positive Sharpe — pre-2020 momentum was not statistically significant.
-- **COVID 2020:** Value was contained (not the catastrophic −3.31*** seen in earlier runs — now t=−0.59 due to different data). Quality reversed sharply (Sharpe −1.091) — profitability offered no protection in a liquidity panic. Momentum held (Sharpe +0.824). Low-vol was near-zero (Sharpe +0.075).
+- **Pre-COVID 2015–2019:** Quality dominated the stable oil-revenue era (Sharpe +1.235, t=+1.74*). Momentum was flat despite positive Sharpe: pre-2020 momentum was not statistically significant.
+- **COVID 2020:** Value was contained (not the catastrophic −3.31*** seen in earlier runs; now t=−0.59 due to different data). Quality reversed sharply (Sharpe −1.091), as profitability offered no protection in a liquidity panic. Momentum held (Sharpe +0.824). Low-vol was near-zero (Sharpe +0.075).
 - **Post-COVID 2021–2023:** Quality showed its strongest sub-period (Sharpe +2.165). Low-vol turned positive (Sharpe +0.695). Value remained structurally negative (t=−1.88*, Sharpe −0.909). Momentum positive but not significant.
 - **Recent 2024–2026:** Momentum at its strongest (Sharpe +0.903, t=+1.89*). Quality robust (Sharpe +1.557, t=+1.74*). Low-vol improving (Sharpe +0.586, t=+1.71*). Value weakening (Sharpe −0.190).
 
@@ -363,7 +363,7 @@ Kuwait was upgraded from MSCI Frontier to MSCI Emerging Market in June 2020. For
 
 3. **Short-side implementation:** GCC markets have limited stock borrowing outside Tadawul. The long-short framework is used as an academic test of signal direction. A practical implementation would be long-only or confine shorting to the most liquid Tadawul names.
 
-4. **Low-vol L/S portfolio negative after fix:** The short-book filter (market cap ≥$300M, vol ≥200k shares, z-score cap) was applied and data regenerated, but the L/S return is still negative (−1.47%, Sharpe −0.042). The IC signal (ICIR +1.583) is genuine — the portfolio construction problem persists beyond simple short-book filtering. A long-only low-vol sleeve is the implementable path.
+4. **Low-vol L/S portfolio negative after fix:** The short-book filter (market cap ≥$300M, vol ≥200k shares, z-score cap) was applied and data regenerated, but the L/S return is still negative (−1.47%, Sharpe −0.042). The IC signal (ICIR +1.583) is genuine, but the portfolio construction problem persists beyond simple short-book filtering. A long-only low-vol sleeve is the implementable path.
 
 5. **Small joint-regression sample:** The joint FM requires all four factor scores simultaneously, reducing coverage to 102 stocks/month vs 148 for momentum univariate. The restriction disproportionately excludes smaller Kuwaiti and Qatari names, introducing a mild large-cap bias in the joint model.
 
@@ -373,9 +373,9 @@ Kuwait was upgraded from MSCI Frontier to MSCI Emerging Market in June 2020. For
 
 ## 13. Key Conclusions
 
-1. **VALUE is the most statistically significant finding — but inverted.** Univariate t = −2.16**, the most significant negative premium in the full-sample FM results. Cheap stocks underperform by 8.39% per year consistently across all sub-periods and all exchanges. This is a publishable negative result.
+1. **VALUE is statistically significant, but inverted.** Univariate t = −2.16**, the most significant negative premium in the full-sample FM results. Cheap stocks underperform by 8.39% per year consistently across all sub-periods and all exchanges. This is a publishable negative result.
 
-2. **QUALITY has the strongest positive signal.** FM t = +2.98*** univariate, ICIR +1.453, Sharpe +1.030. Must be discounted for look-ahead bias — realistic out-of-sample Sharpe is 0.4–0.6. The dominant factor in pre-COVID and post-COVID environments.
+2. **QUALITY has the strongest positive signal.** FM t = +2.98*** univariate, ICIR +1.453, Sharpe +1.030. Must be discounted for look-ahead bias: realistic out-of-sample Sharpe is 0.4–0.6. The dominant factor in pre-COVID and post-COVID environments.
 
 3. **MOMENTUM works but with marginal FM significance (t=+1.81*).** Perfect quintile monotonicity and ICIR +1.033 confirm the signal is real. No look-ahead bias. Strengthening in the most recent period (2024–2026: Sharpe +0.903). The most implementable factor.
 
@@ -383,7 +383,7 @@ Kuwait was upgraded from MSCI Frontier to MSCI Emerging Market in June 2020. For
 
 5. **The VRP overlay dramatically improves portfolio economics.** A dynamic covered-call overlay sized by the VRP gap between implied and realised volatility converts a 0.49 Sharpe multi-factor portfolio into a 1.79 Sharpe system. Hit rate rises from 58.8% to 77.1%. The VRP gap is persistent across all market regimes (calm: 7.5pp, normal: 8.7pp, stressed: 9.3pp).
 
-6. **GCC market structure explains the cross-sectional patterns.** Oil price cycles drive momentum. State-linked mega-caps drive quality premia. Low institutional participation prevents value mean-reversion. Post-MSCI-upgrade liquidity improvements are gradually strengthening the low-vol signal but have not yet made it harvestable via L/S. These are not statistical artifacts — they have coherent economic explanations rooted in GCC market microstructure.
+6. **GCC market structure explains the cross-sectional patterns.** Oil price cycles drive momentum. State-linked mega-caps drive quality premia. Low institutional participation prevents value mean-reversion. Post-MSCI-upgrade liquidity improvements are gradually strengthening the low-vol signal but have not yet made it harvestable via L/S. These are not statistical artifacts. They have coherent economic explanations rooted in GCC market microstructure.
 
 ---
 

@@ -1,37 +1,16 @@
 > This is the original project plan, written before the data was collected. Planned figures such as the ~202-stock universe differ from what was finally built. See `research_summary.md` and the main README for the actual results.
 
-# GCC Equity Factor Research Engine — Project Specification
+# GCC Equity Factor Research Engine: Project Specification
 
-> Hand this document to Claude Code to implement the full project.  
-> Every architectural decision, design choice, and methodology constraint is captured here.
-
----
-
-## 1. What I am trying to achieve
-
-I am building a **systematic equity factor research engine** covering GCC capital markets as a proof-of-work project to enter the asset management / hedge fund industry in the UAE. The project must do two things simultaneously:
-
-1. **Demonstrate quantitative research ability** — not just "I can code", but "I can think like a quant analyst and build something an AM firm would recognise as rigorous."
-2. **Be a publishable research study** — the underlying question ("do classic equity factor premia hold in GCC markets?") has not been answered in the published literature at the stock level. This is genuinely original work.
-
-The deliverable is a **live public dashboard** (Streamlit) with a 4-page research note (PDF) and a clean GitHub repo. These three together go on my CV and into every cold email I send to Mubadala, Arqaam, Wamda, and similar firms in DIFC.
-
-The project also serves as my MSc application thesis proposal. The exact research question:
+## 1. Research question
 
 > *"Do classic equity factor premia (value, momentum, quality, low volatility) generate statistically significant alpha in GCC equity markets, and do they behave differently across ADX, DFM, Tadawul, QSE, and Boursa Kuwait?"*
 
----
-
-## 2. Project context
-
-- **Background:** Undergraduate degree completed. One year out of university (as of April 2025). Builder mindset — combining finance and technology.
-- **Career target:** Asset management roles in UAE (DIFC). Longer-term: hedge fund.
-- **Previous work:** FortuneFlo (personal finance platform) — established that I can build financial data pipelines.
-- **Why GCC specifically:** This is the market the hiring firms operate in. Showing you understand GCC equity structure, liquidity constraints, and market microstructure beats any generic quant project.
+To my knowledge this has not been answered in the published literature at the individual-stock level across all five GCC exchanges. The project combines a factor research engine, a public dashboard and a short research note.
 
 ---
 
-## 3. Universe — 202 stocks final
+## 2. Universe: ~202 stocks planned
 
 The investable universe after applying the liquidity and data quality filters described below.
 
@@ -46,7 +25,7 @@ The investable universe after applying the liquidity and data quality filters de
 | Boursa Kuwait | Kuwait | Emerging Market (upgraded June 2020) | `.KW` | ~17 |
 | **Total** | | | | **~202** |
 
-Oman (MSM) and Bahrain (BSE) are excluded — insufficient liquidity for implementable factor portfolios. This exclusion is documented in the methodology as a deliberate decision, not a gap.
+Oman (MSM) and Bahrain (BSE) are excluded because of insufficient liquidity for implementable factor portfolios. This exclusion is documented in the methodology as a deliberate decision, not a gap.
 
 ### Liquidity filters applied during pipeline (Layer 1)
 
@@ -65,13 +44,13 @@ END_DATE        = "2025-12-31"
 
 ### GCC-specific data handling
 
-- **Trading calendar:** ADX, DFM, Tadawul trade Sunday–Thursday. Resample to month-end using `.resample('ME').last()` — do not try to build a custom GCC trading calendar.
+- **Trading calendar:** ADX, DFM, Tadawul trade Sunday–Thursday. Resample to month-end using `.resample('ME').last()`. Do not try to build a custom GCC trading calendar.
 - **Corporate actions:** Use `yf.download(ticker, auto_adjust=True)` always. Etisalat → EAND is the most common rename that breaks pipelines.
 - **Kuwait MSCI natural experiment:** Save separate Parquet files split at June 2020 (`prices_kuwait_pre_msci.parquet`, `prices_kuwait_post_msci.parquet`). Test factor premia pre vs post MSCI upgrade as a sub-study.
 
 ---
 
-## 4. Layer 1 — Data pipeline (complete)
+## 3. Layer 1: Data pipeline (complete)
 
 **Status: built. Do not rebuild unless there is a bug.**
 
@@ -113,13 +92,13 @@ data/
 
 ---
 
-## 5. Layer 2 — Factor construction (implement this)
+## 4. Layer 2: Factor construction (implement this)
 
 ### Overview
 
 Compute four factors monthly across all 202 stocks. For each factor:
 1. Compute the raw signal per stock
-2. Winsorise at 1st/99th percentile (suppress GCC outliers — small-cap ratios are extreme)
+2. Winsorise at 1st/99th percentile (suppress GCC outliers, since small-cap ratios are extreme)
 3. Cross-sectional z-score (zero mean, unit variance, within each month)
 4. Assign to quintile Q1 (best) through Q5 (worst)
 5. Build equal-weighted long-short portfolio: long Q1, short Q5
@@ -132,17 +111,17 @@ Monthly rebalancing. Returns shifted by t+1 (rank at end of month t, earn return
 
 **Source data:** `prices_{exchange}.parquet` (monthly)
 
-**Definition:** Jegadeesh-Titman (1993) — cumulative return from t-12 to t-2, skipping the most recent month.
+**Definition:** Jegadeesh-Titman (1993): cumulative return from t-12 to t-2, skipping the most recent month.
 
 ```
 MOM(t) = (Price[t-2] / Price[t-12]) - 1
 ```
 
-**Skip logic:** The most recent month (t-1) is excluded because GCC equities show short-term reversal — stocks that rallied last month give back gains in the current month. Including it would contaminate the signal.
+**Skip logic:** The most recent month (t-1) is excluded because GCC equities show short-term reversal: stocks that rallied last month give back gains in the current month. Including it would contaminate the signal.
 
 **Minimum data requirement:** Stock must have at least `0.80 × (12 - 1) = 8.8` valid monthly observations in the 11-month window (t-12 to t-2), i.e. round up to 9. Stock gets `NaN` otherwise.
 
-**New IPO handling:** A stock listed in March 2022 cannot receive a momentum score until March 2023. The `NaN` propagates correctly through pandas — no special handling needed beyond the minimum history check.
+**New IPO handling:** A stock listed in March 2022 cannot receive a momentum score until March 2023. The `NaN` propagates correctly through pandas, so no special handling is needed beyond the minimum history check.
 
 **Direction:** Higher momentum score = better. Q1 = top momentum stocks (long). Q5 = worst momentum (short).
 
@@ -161,9 +140,9 @@ LOW_VOL_SCORE(t) = -z_score(VOL(t))   ← inverted: lower vol = higher score
 
 **Minimum data requirement:** At least 180 daily observations in the 252-day window. Otherwise `NaN`.
 
-**Fallback (if daily files missing):** Use trailing 12-month monthly return std × √12. Flag this in the output with a warning — it is less accurate.
+**Fallback (if daily files missing):** Use trailing 12-month monthly return std × √12. Flag this in the output with a warning, because it is less accurate.
 
-**Direction:** Invert before z-scoring. Lower volatility = higher score = long side of the portfolio. Do not forget the inversion — this is the most common implementation error.
+**Direction:** Invert before z-scoring. Lower volatility = higher score = long side of the portfolio. Do not forget the inversion; this is the most common implementation error.
 
 **Why daily, not monthly:** 252 daily observations give a precise vol estimate. 12 monthly observations give a noisy one. The momentum and value/quality factors can use monthly data because they capture slow-moving signals. Vol is sensitive to estimation frequency.
 
@@ -171,7 +150,7 @@ LOW_VOL_SCORE(t) = -z_score(VOL(t))   ← inverted: lower vol = higher score
 
 ### Factor 3: Value (composite)
 
-**Source data:** `yfinance.Ticker(ticker).info` — point-in-time snapshot
+**Source data:** `yfinance.Ticker(ticker).info` (a current snapshot, not point-in-time history)
 
 **Signals:**
 - `priceToBook` → invert: `1 / P/B`
@@ -179,7 +158,7 @@ LOW_VOL_SCORE(t) = -z_score(VOL(t))   ← inverted: lower vol = higher score
 
 **Composite construction:**
 1. Invert each ratio (lower ratio = more value = higher signal)
-2. Exclude negative values (negative P/B or EV/EBITDA = distressed / unreliable) — set to `NaN`
+2. Exclude negative values (negative P/B or EV/EBITDA = distressed / unreliable) and set them to `NaN`
 3. Winsorise each signal at 1/99
 4. Z-score each signal cross-sectionally
 5. Average the two z-scores (equal weight). If only one is available, use that one alone.
@@ -214,7 +193,7 @@ cv = eps.std() / abs(eps.mean())   # coefficient of variation
 stability = 1 / cv                  # invert: lower CV = higher stability
 ```
 
-**Composite construction:** Same as Value — winsorise, z-score, weighted average with partial-NaN handling (use available signals, adjust weights accordingly).
+**Composite construction:** Same as Value: winsorise, z-score, weighted average with partial-NaN handling (use available signals, adjust weights accordingly).
 
 **Direction:** Higher quality score = better. Q1 = highest quality (long). Q5 = lowest quality (short).
 
@@ -269,7 +248,7 @@ for date in dates[:-1]:
               - returns.loc[next_date, q5_stocks].mean()
 ```
 
-**All five quintile returns are saved** (Q1–Q5), not just the long-short spread. This allows quintile monotonicity analysis — a properly-working factor shows monotonic return improvement from Q5 to Q1.
+**All five quintile returns are saved** (Q1–Q5), not just the long-short spread. This allows quintile monotonicity analysis: a properly-working factor shows monotonic return improvement from Q5 to Q1.
 
 ---
 
@@ -347,7 +326,7 @@ Next: python fama_macbeth.py
 
 ---
 
-## 6. Layer 3 — Analysis (build after Layer 2)
+## 5. Layer 3: Analysis (build after Layer 2)
 
 ### 6a. Fama-MacBeth regressions (`fama_macbeth.py`)
 
@@ -376,7 +355,7 @@ For each factor's L/S portfolio:
 | Sharpe ratio | `ann_return / ann_vol` |
 | Maximum drawdown | `min(cumulative_drawdown_series)` |
 | Hit rate | `fraction of months where LS > 0` |
-| Information coefficient (IC) | `spearman_corr(factor_scores_t, returns_t+1)` — monthly, then mean |
+| Information coefficient (IC) | `spearman_corr(factor_scores_t, returns_t+1)`, monthly, then mean |
 | Turnover | `fraction of portfolio that changes on each rebalance date` |
 | Quintile monotonicity | Do Q1 through Q5 show monotonically increasing returns? |
 
@@ -391,17 +370,17 @@ For each factor's L/S portfolio:
 
 ---
 
-## 7. Layer 4 — Dashboard (Streamlit)
+## 6. Layer 4: Dashboard (Streamlit)
 
 File: `app.py`. Deploy free on Streamlit Community Cloud.
 
 ### Pages
 
-1. **Universe overview** — map of GCC exchanges, stock count per exchange, market cap breakdown, sector composition
-2. **Factor scores (live)** — table of all 202 stocks with current z-scores for all four factors and their quintile assignment. Filterable by exchange and sector.
-3. **Factor performance** — cumulative L/S return chart per factor, quintile return bar chart (monotonicity check), rolling 12-month Sharpe
-4. **Research note** — embedded PDF or rendered markdown
-5. **Methodology** — one-page plain-language explanation of what each factor measures and how it is constructed
+1. **Universe overview**: map of GCC exchanges, stock count per exchange, market cap breakdown, sector composition
+2. **Factor scores (live)**: table of all 202 stocks with current z-scores for all four factors and their quintile assignment. Filterable by exchange and sector.
+3. **Factor performance**: cumulative L/S return chart per factor, quintile return bar chart (monotonicity check), rolling 12-month Sharpe
+4. **Research note**: embedded PDF or rendered markdown
+5. **Methodology**: one-page plain-language explanation of what each factor measures and how it is constructed
 
 ### Tech stack
 
@@ -417,16 +396,16 @@ No database required. All data lives in Parquet files read at startup.
 
 ---
 
-## 8. Research note outline (4 pages, PDF)
+## 7. Research note outline (4 pages, PDF)
 
 The research note is sent instead of a cover letter to quant roles. Write it alongside the code.
 
-1. **Abstract** (half page) — research question, method, key finding
-2. **Introduction** (half page) — why GCC, why factors, what gap this fills in literature
-3. **Data and universe construction** (half page) — exchanges, date range, liquidity filters, survivorship bias disclosure
-4. **Methodology** (1 page) — factor definitions, Fama-MacBeth procedure, transaction cost assumption
-5. **Results** (1 page) — factor premia table with t-stats, quintile monotonicity charts, sub-period analysis
-6. **Conclusion** (quarter page) — answer the research question, limitations, extensions
+1. **Abstract** (half page): research question, method, key finding
+2. **Introduction** (half page): why GCC, why factors, what gap this fills in literature
+3. **Data and universe construction** (half page): exchanges, date range, liquidity filters, survivorship bias disclosure
+4. **Methodology** (1 page): factor definitions, Fama-MacBeth procedure, transaction cost assumption
+5. **Results** (1 page): factor premia table with t-stats, quintile monotonicity charts, sub-period analysis
+6. **Conclusion** (quarter page): answer the research question, limitations, extensions
 
 **The survivorship bias paragraph (include verbatim):**
 > "Our universe is constructed from stocks currently listed on each exchange as of December 2025, introducing potential survivorship bias. Stocks delisted, acquired, or suspended during the study period are not captured. Prior literature suggests survivorship bias inflates annualised factor spread estimates by approximately 0.5–2% (Elton et al., 1996; Linnainmaa and Roberts, 2018). We mitigate this by focusing on comparative cross-market analysis rather than claiming absolute implementable alpha. Newly listed securities are included from their first trading month but require a minimum 12-month price history before receiving factor scores, consistent with standard practice."
@@ -436,14 +415,14 @@ The research note is sent instead of a cover letter to quant roles. Write it alo
 
 ---
 
-## 9. Key citations
+## 8. Key citations
 
 | Paper | Why it is cited |
 |---|---|
 | Fama & French (1992, 1993) | Value and size factor construction |
 | Jegadeesh & Titman (1993) | Momentum factor definition (12-1) |
 | Fama & MacBeth (1973) | Cross-sectional regression methodology |
-| Ang et al. (2006) | Low-volatility anomaly — idiosyncratic vol and expected returns |
+| Ang et al. (2006) | Low-volatility anomaly: idiosyncratic vol and expected returns |
 | Elton, Gruber & Blake (1996) | Survivorship bias quantification |
 | Linnainmaa & Roberts (2018) | Factor premia and data mining / survivorship bias |
 | Harvey, Liu & Zhu (2016) | Multiple-testing correction in factor research |
@@ -451,18 +430,18 @@ The research note is sent instead of a cover letter to quant roles. Write it alo
 
 ---
 
-## 10. File structure
+## 9. File structure
 
 ```
 gcc-factor-engine/
 ├── data/                          # all Parquet and CSV outputs
-├── gcc_data_pipeline.py           # Layer 1 — complete
+├── gcc_data_pipeline.py           # Layer 1: complete
 ├── gcc_tickers_updated.py         # universe ticker lists (202 stocks)
 ├── update_gcc_universe.py         # utility to check for new listings
-├── factor_construction.py         # Layer 2 — implement this
+├── factor_construction.py         # Layer 2: implement this
 ├── fama_macbeth.py                # Layer 3a
 ├── backtest.py                    # Layer 3b
-├── app.py                         # Layer 4 — Streamlit dashboard
+├── app.py                         # Layer 4: Streamlit dashboard
 ├── research_note.md               # 4-page research note source
 ├── requirements.txt
 └── README.md
@@ -485,21 +464,21 @@ statsmodels>=0.14     # for Newey-West standard errors
 
 ---
 
-## 11. Common failure modes to anticipate
+## 10. Common failure modes to anticipate
 
 | Problem | Cause | Fix |
 |---|---|---|
 | `yf.download()` returns empty DataFrame | Ticker string wrong or delisted | Log to dead_tickers list, skip, continue |
-| Negative P/B or EV/EBITDA | Distressed firm or data error | Set to NaN — do not invert |
+| Negative P/B or EV/EBITDA | Distressed firm or data error | Set to NaN; do not invert |
 | `quarterly_earnings` returns None | No coverage in yfinance | Return NaN for stability score |
-| Factor scores all identical in a month | Insufficient valid stocks | Skip month — log a warning |
+| Factor scores all identical in a month | Insufficient valid stocks | Skip month and log a warning |
 | Kuwait returns look abnormal pre-2016 | Thin yfinance coverage | Filter: only use Kuwait data from 2016 onwards |
-| `priceToBook` missing for 40%+ of universe | Small-cap GCC coverage gap | Expected — document in research note, not a bug |
+| `priceToBook` missing for 40%+ of universe | Small-cap GCC coverage gap | Expected; document in research note, not a bug |
 | Tadawul tickers returning USD prices | Wrong ticker format | Tadawul uses numeric codes: `2222.SR`, not company names |
 
 ---
 
-## 12. What success looks like
+## 11. What success looks like
 
 The project is complete when:
 
