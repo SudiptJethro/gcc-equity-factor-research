@@ -1,0 +1,22 @@
+# Raw market data: re-download with Layer_1 (not redistributable)
+data/prices_*.parquet
+data/daily_*.parquet
+data/returns_*.parquet
+data/fundamentals.parquet
+data/earnings_stability.parquet
+data/factor_scores.parquet
+data/layer3b_positions.parquet
+data/layer3c_*.parquet
+data/portfolio_returns.parquet
+
+# Credentials and local tooling
+.env
+*.key
+Key_doc*.txt
+.gstack/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
