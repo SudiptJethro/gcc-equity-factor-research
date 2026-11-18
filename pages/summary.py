@@ -214,23 +214,25 @@ METHODOLOGY_TEXT = html.Div([
     html.H6("Research Framework", style={"color": GOLD, "fontWeight": 700, "marginBottom": "12px"}),
     html.P([
         html.Strong("Universe & Data: "), "167 GCC-listed equities across Tadawul (Saudi Arabia), "
-        "ADX, DFM, QSE, and Boursa Kuwait. Monthly data 2015–2025 (~135 months). "
-        "Price data from Yahoo Finance; fundamentals from Refinitiv.",
+        "ADX, DFM, QSE, and Boursa Kuwait. Monthly data March 2015 – May 2026 (~135 months). "
+        "Prices from Yahoo Finance (TradingView for ADX/DFM gaps); fundamentals are a single "
+        "December 2025 Yahoo Finance snapshot, so value and quality results are upper bounds.",
     ], className="mb-2", style={"fontSize": "0.84rem", "color": WHITE}),
     html.P([
         html.Strong("Layer 1 - Factor Analysis: "), "Four factors - Momentum (12-1 month), "
-        "Quality (ROE + earnings stability composite), Value (P/B + EV/EBITDA, inverted for GCC), "
+        "Quality (ROE, earnings stability and operating margin), Value (P/B + EV/EBITDA, inverted for GCC), "
         "Low-Vol (rolling 252-day σ). Fama-MacBeth (1973) cross-sectional OLS each month; "
         "time-series means tested with Newey-West (4-lag) t-statistics.",
     ], className="mb-2", style={"fontSize": "0.84rem", "color": WHITE}),
     html.P([
         html.Strong("Layer 2 - CB Portfolio: "), "Sleeve A buys top-20 quality+momentum stocks "
         "(vol-scaled to 10% target), Sleeve B holds top-20 lowest-vol stocks (8% target). "
-        "30 bps round-trip transaction costs; TASI futures hedge (30% of long book).",
+        "30 bps round-trip transaction costs and a drawdown circuit breaker.",
     ], className="mb-2", style={"fontSize": "0.84rem", "color": WHITE}),
     html.P([
-        html.Strong("Key Finding: "), "Momentum and Quality are statistically significant GCC "
-        "factor premia (t > 1.96). Value exhibits a sign-flip (expensive stocks outperform). "
+        html.Strong("Key Finding: "), "Quality is the strongest GCC factor premium (t = 2.98, "
+        "look-ahead inflated); momentum is marginal (t = 1.81) but has the cleanest quintile "
+        "spread. Value exhibits a sign-flip (expensive stocks outperform). "
         "Base CB portfolio achieves Sharpe 0.49 with Max DD -22.9% over the full period.",
     ], className="mb-0", style={"fontSize": "0.84rem", "color": TEAL, "fontStyle": "italic"}),
 ], style={"lineHeight": "1.65"})
@@ -254,6 +256,11 @@ def _card(title, content) -> dbc.Card:
 def layout() -> html.Div:
     ts = load_tearsheet()
     panel_a, panel_b = compute_thesis_scorecard()
+    fm = load_fm_summary().set_index("factor")
+
+    def _p(t):
+        t = abs(t)
+        return "p < 1%" if t >= 2.576 else "p < 5%" if t >= 1.96 else "p < 10%" if t >= 1.645 else "n.s."
 
     return html.Div([
         html.Div([
@@ -266,9 +273,12 @@ def layout() -> html.Div:
         # Stat cards
         dbc.Row([
             _stat_card("Base Sharpe", "0.49", "CB portfolio (vol-scaled)", GOLD),
-            _stat_card("FM t-stat Quality", "+2.86", "p < 1% (NW-4 lag)", GREEN),
-            _stat_card("FM t-stat Momentum", "+1.97", "p < 5% (univariate)", TEAL),
-            _stat_card("Quality IC", "0.075", "IC/IR annualised 1.42", BLUE),
+            _stat_card("FM t-stat Quality", f"{fm.loc['QUALITY', 't_uni_nw3']:+.2f}",
+                       f"{_p(fm.loc['QUALITY', 't_uni_nw3'])} (univariate, NW-4 lag)", GREEN),
+            _stat_card("FM t-stat Momentum", f"{fm.loc['MOMENTUM', 't_uni_nw3']:+.2f}",
+                       f"{_p(fm.loc['MOMENTUM', 't_uni_nw3'])} (univariate, NW-4 lag)", TEAL),
+            _stat_card("Quality IC", f"{fm.loc['QUALITY', 'IC_mean']:.3f}",
+                       f"ICIR annualised {fm.loc['QUALITY', 'ICIR_ann']:.2f}", BLUE),
         ], className="mb-2"),
 
         # Strategy comparison charts

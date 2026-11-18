@@ -590,7 +590,7 @@ def layout() -> html.Div:
             html.H4("Layer 1 - Factor Analysis", className="mb-1",
                     style={"color": GOLD, "fontWeight": 700}),
             html.P("Fama-MacBeth cross-sectional regressions across 167 GCC stocks · "
-                   "2015–2025 · Quintile analysis per exchange",
+                   "2015–2026 · Quintile analysis per exchange",
                    className="mb-0", style={"color": SUBTEXT, "fontSize": "0.88rem"}),
         ], className="mb-4"),
 

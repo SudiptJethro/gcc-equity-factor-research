@@ -299,7 +299,6 @@ def load_portfolio_returns() -> pd.DataFrame:
         }, index=dates)
 
     df = df.dropna(subset=["base_return"])
-    df = df[df["base_return"] != 0]
     _cache["portfolio_returns"] = df
     return df
 

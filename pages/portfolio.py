@@ -181,7 +181,7 @@ def layout() -> html.Div:
         html.Div([
             html.H4("Layer 2 - Base CB Portfolio", className="mb-1",
                     style={"color": GOLD, "fontWeight": 700}),
-            html.P("Long-only quality + momentum equity sleeves · vol-scaled · "
+            html.P("Long-only quality + momentum and low-vol sleeves · net of 30 bp costs · vol-scaled · "
                    "Sharpe 0.49 · Max DD -22.9%",
                    className="mb-0", style={"color": SUBTEXT, "fontSize": "0.88rem"}),
         ], className="mb-4"),

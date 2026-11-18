@@ -86,7 +86,7 @@ sidebar = html.Div([
     html.Div([
         html.Div("167 stocks · 5 exchanges",
                  style={"color": SUBTEXT, "fontSize": "0.72rem"}),
-        html.Div("2015 – 2025 · ~135 months",
+        html.Div("2015 – 2026 · ~135 months",
                  style={"color": SUBTEXT, "fontSize": "0.72rem"}),
         html.Div("Fama-MacBeth (1973) methodology",
                  style={"color": SUBTEXT, "fontSize": "0.72rem", "marginTop": "4px"}),

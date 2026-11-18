@@ -30,6 +30,19 @@ This project tests that on **167 stocks across five GCC exchanges** (Tadawul, AD
 
 The full write-up is in [`docs/research_summary.md`](docs/research_summary.md). It covers exchange-level results, sub-periods (pre-COVID, COVID, post-COVID, 2024–26) and Kuwait's MSCI upgrade as a natural experiment.
 
+## Dashboard
+
+An interactive Plotly Dash app presents every layer of the research. It runs from the derived outputs in `data/`.
+
+![Factor analysis: L/S statistics, Fama-MacBeth coefficients and quintile spreads](docs/images/factor-analysis.png)
+
+| | |
+|---|---|
+| ![Backtesting: quintile monotonicity and risk-adjusted performance by exchange](docs/images/backtesting.png) | ![Base portfolio: cumulative return, drawdowns and rolling Sharpe](docs/images/portfolio.png) |
+| **Backtesting.** Quintile monotonicity, net-of-cost L/S returns and IC by exchange | **Portfolio.** Cumulative return, drawdowns and rolling 12-month Sharpe |
+
+![Research summary: headline statistics and thesis scorecard](docs/images/research-summary.png)
+
 ## Limitations
 
 - **Look-ahead bias in fundamentals.** Value and quality use a single December 2025 snapshot from Yahoo Finance, not point-in-time history. Treat both results as upper bounds.
@@ -44,6 +57,8 @@ pip install -r requirements.txt
 python app.py              # dashboard at http://127.0.0.1:8050
 pytest -q tests            # checks the headline numbers against the output files
 ```
+
+To host the dashboard, `render.yaml` deploys it as a free web service on [Render](https://render.com): choose **New → Blueprint** and select this repository.
 
 The dashboard runs from the derived outputs in `data/`. Raw prices and fundamentals aren't redistributed. [`data/README.md`](data/README.md) explains how to download them and rebuild every layer.
 
